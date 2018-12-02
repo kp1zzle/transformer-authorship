@@ -13,6 +13,7 @@ from torch.autograd import Variable
 from torchtext import data, datasets
 import spacy
 #seaborn.set_context(context="talk")
+import pdb
 
 ### MODEL DEFINITION ###
 # Overall Architecture
@@ -339,6 +340,7 @@ class LabelSmoothing(nn.Module):
         
     def forward(self, x, target):
         assert x.size(1) == self.size
+        pdb.set_trace()
         true_dist = x.data.clone()
         true_dist.fill_(self.smoothing / (self.size - 2))
         true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
