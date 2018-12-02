@@ -492,7 +492,8 @@ print("Training...")
 for epoch in range(10):
     print("Epoch " + str(epoch) + ":")
     for b in train_iter:
-        print(b)
+        print(b.trg)
+        print(b.src)
     loss = run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   model, SimpleLossCompute(model.generator, criterion, model_opt))
     print(loss)
