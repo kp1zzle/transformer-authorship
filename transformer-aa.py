@@ -553,10 +553,8 @@ for epoch in range(10):
     print("Epoch " + str(epoch) + ":")
     loss = run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   model,
-                  SimpleLossCompute(model.generator, criterion, opt=model_opt)
-
-            
-                    #model_par, 
+                  SimpleLossCompute(model.generator, criterion, opt=model_opt))
+                  #model_par, 
                   #MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
     print(loss)
 
