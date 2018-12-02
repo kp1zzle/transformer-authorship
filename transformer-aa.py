@@ -532,11 +532,11 @@ criterion = criterion.cuda()
 
 
 BATCH_SIZE = 100
-train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=0,
+train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
 
-test_iter = MyIterator(test, batch_size=BATCH_SIZE, device=0,
+test_iter = MyIterator(test, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=False)
 
