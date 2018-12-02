@@ -404,7 +404,7 @@ class MyIterator(data.Iterator):
 
 def rebatch(pad_idx, batch):
     "Fix order in torchtext to match ours"
-    src, trg = batch.src.transpose(0, 1), batch.trg
+    src, trg = batch.src.transpose(0, 1), batch.trg.transpose(0,1)
     return Batch(src, trg, pad_idx)
 
 ### END TRAINING MECHANICS ###
@@ -446,7 +446,7 @@ BOS_WORD = '<s>'
 EOS_WORD = '</s>'
 BLANK_WORD = "<blank>"
 SRC = data.Field(tokenize=tokenize_en, pad_token=BLANK_WORD)
-TGT = data.Field(sequential=False, init_token = BOS_WORD, eos_token = EOS_WORD, pad_token=BLANK_WORD) 
+TGT = data.Field(init_token = BOS_WORD, eos_token = EOS_WORD, pad_token=BLANK_WORD) 
 
 train, test = data.TabularDataset.splits(
     path='../data', train=train_file,
