@@ -526,7 +526,7 @@ print("Target vocab length: " + str(len(TGT.vocab)))
 devices = [0]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
 model = model.cuda()
-pad_idx = SRC.vocab.stoi["<blank>"]
+pad_idx = TGT.vocab.stoi["<blank>"]
 criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0.1)
 criterion = criterion.cuda()
 
