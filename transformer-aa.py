@@ -464,7 +464,7 @@ class MyIterator(data.Iterator):
 def rebatch(pad_idx, batch):
     "Fix order in torchtext to match ours"
     src, trg = batch.src.transpose(0, 1), batch.trg.transpose(0,1)
-    return Batch(src, trg, pad_idx)
+    return Batch(src, trg, pad_idx).cuda()
 
 ### END TRAINING MECHANICS ###
 
@@ -525,10 +525,10 @@ print("Target vocab length: " + str(len(TGT.vocab)))
 
 devices = [0]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
-model.cuda()
+model = model.cuda()
 pad_idx = SRC.vocab.stoi["<blank>"]
 criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0.1)
-criterion.cuda()
+criterion = criterion.cuda()
 
 
 BATCH_SIZE = 100
