@@ -433,7 +433,7 @@ def make_model(src_vocab, tgt_vocab, N=6,
     return model
 
 ### LOAD DATASET AND TRAIN MODEL ###
-use_cuda = False
+use_cuda = True
 # Load dataset
 train_file = 'C50-trainData.csv'
 test_file = 'C50-testData.csv'
