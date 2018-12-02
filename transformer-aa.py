@@ -466,7 +466,7 @@ print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
 
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
-pad_idx = SRC.vocab.stoi["<blank>"]
+pad_idx = SRC.vocab.stoi["<blank>"].cuda()
 criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0.1)
 
 if use_cuda:
