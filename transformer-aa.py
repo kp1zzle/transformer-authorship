@@ -404,7 +404,7 @@ class MyIterator(data.Iterator):
 
 def rebatch(pad_idx, batch):
     "Fix order in torchtext to match ours"
-    src, trg = batch.src.transpose(), batch.trg.transpose()
+    src, trg = batch.src, batch.trg
     return Batch(src, trg, pad_idx)
 
 ### END TRAINING MECHANICS ###
