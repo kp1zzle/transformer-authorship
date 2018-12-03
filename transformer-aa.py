@@ -275,6 +275,8 @@ def run_epoch(data_iter, model, loss_compute):
         tokens += batch.ntokens
         if i % 50 == 1:
             elapsed = time.time() - start
+            print(batch.ntokens)
+            print(elapsed)
             if batch.ntokens != 0:
                 print("Epoch Step: %d Loss: %f Tokens per Sec: %f" % (i, loss / batch.ntokens.float(), tokens / elapsed))
             start = time.time()
