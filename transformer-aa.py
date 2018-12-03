@@ -425,7 +425,8 @@ class MultiGPULossCompute:
             o1.backward(gradient=o2)
             self.opt.step()
             self.opt.optimizer.zero_grad()
-        return total * normalize
+        return total * normalize.float()
+
 
 # Greedy decoder
 def greedy_decode(model, src, src_mask, max_len, start_symbol):
