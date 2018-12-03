@@ -538,7 +538,7 @@ train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
 
-test_iter = MyIterator(test, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
+test_iter = MyIterator(test, batch_size=1, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=False)
 
@@ -561,7 +561,7 @@ for epoch in range(1):
 
 # Evaluate model
 for i, batch in enumerate(test_iter):
-    src = batch.src.transpose(0, 1)[:1]
+    src = batch.src.transpose(0, 1)
     src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
     out = greedy_decode(model, src, src_mask, 
                         max_len=5, start_symbol=TGT.vocab.stoi["<s>"])
@@ -579,7 +579,7 @@ for i, batch in enumerate(test_iter):
         if sym == "</s>": break
         print(sym, end =" ")
     print()
-    break
+    print(i)
     
 
 
