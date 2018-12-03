@@ -545,7 +545,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 
 print("Training...")
-for epoch in range(1):
+for epoch in range(10):
     print("Epoch " + str(epoch) + ":")
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
