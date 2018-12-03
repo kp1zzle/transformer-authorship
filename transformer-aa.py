@@ -573,8 +573,9 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
         sent = tokenize_en(sentence)
         src = torch.LongTensor([[SRC.vocab.stoi[w] for w in sent]])
         src = Variable(src)
+        src = src.cuda()
         src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
-        out = greedy_decode(model, src, src_mask, 
+        out = greedy_decode(model, src, src_mask.cuda(), 
                             max_len=3, start_symbol=TGT.vocab.stoi["<s>"])
         print("Translation:", end="\t")
         trans = ""
