@@ -12,6 +12,10 @@ import spacy
 import pdb
 import pandas as pd
 
+
+train_file = 'C50-trainData.csv'
+test_file = 'C50-testData.csv'
+
 spacy_en = spacy.load('en')
 def tokenize_en(text):
         return [tok.text for tok in spacy_en.tokenizer(text)]
