@@ -584,8 +584,9 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
             if sym == "</s>": break
             trans += sym + " "
         print(trans)
+        print(label)
 
-        if atoi(trans) == label:
+        if int(trans) == label:
             correct += 1
 
     acc = float(correct)/float(len(labels))
