@@ -542,16 +542,18 @@ model_par = nn.DataParallel(model, device_ids=devices)
 model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
-model_par.train()
+
 print("Training...")
 for epoch in range(3):
     print("Epoch " + str(epoch) + ":")
+    model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   #model,
                   #SimpleLossCompute(model.generator, criterion, opt=model_opt))
                   model_par, 
                   MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
-
+    model_par.eval()
+    
 # save trained model
 torch.save(model, 'model.pt')
 
