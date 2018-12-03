@@ -531,7 +531,7 @@ TGT.build_vocab(train)
 print("Vocabulary built")
 print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
-
+'''
 devices = [0]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=args.stack_layers)
 model = model.cuda()
@@ -565,6 +565,8 @@ for epoch in range(args.epochs):
     
 # save trained model
 torch.save(model, 'model.pt')
+'''
+model = torch.load('model.pt')
 
 model.eval()
 # Evaluate model
@@ -593,6 +595,9 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
             trans += sym + " "
         print(trans)
         print(label)
+
+        if trans == "":
+            trans = "-1"
 
         if int(trans) == label:
             correct += 1
