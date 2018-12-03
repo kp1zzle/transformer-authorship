@@ -508,7 +508,7 @@ BLANK_WORD = "<blank>"
 SRC = data.Field(tokenize=tokenize_en, pad_token=BLANK_WORD)
 TGT = data.Field(init_token = BOS_WORD, eos_token = EOS_WORD, pad_token=BLANK_WORD) 
 
-train = data.TabularDataset.splits(path='../data', train=train_file, format='csv',
+train, test = data.TabularDataset.splits(path='../data', train=train_file, test=test_file, format='csv',
     fields=[('src', SRC), ('trg', TGT)])
 
 print("Dataset loaded")
