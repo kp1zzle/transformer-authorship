@@ -525,7 +525,7 @@ print("Vocabulary built")
 print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
 
-devices = [0,2]
+devices = [0,1]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
 model = model.cuda()
 pad_idx = TGT.vocab.stoi["<blank>"]
