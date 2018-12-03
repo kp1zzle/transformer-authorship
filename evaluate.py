@@ -1,3 +1,17 @@
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import math, copy, time
+from torch.autograd import Variable
+#import matplotlib.pyplot as plt
+#import seaborn
+from torchtext import data, datasets
+import spacy
+#seaborn.set_context(context="talk")
+import pdb
+import pandas as pd
+
 spacy_en = spacy.load('en')
 def tokenize_en(text):
         return [tok.text for tok in spacy_en.tokenizer(text)]
