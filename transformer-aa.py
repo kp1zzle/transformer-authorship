@@ -562,7 +562,7 @@ model.eval()
 # Evaluate model
 # Load train data
 with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
-    data = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
+    dataset = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
     
     texts = dataset['text'].tolist()
     labels = dataset['author'].tolist()
