@@ -15,6 +15,7 @@ import spacy
 #seaborn.set_context(context="talk")
 import pdb
 import pandas as pd
+import argparse
 
 ### MODEL DEFINITION ###
 # Overall Architecture
@@ -496,6 +497,12 @@ def make_model(src_vocab, tgt_vocab, N=6,
     return model
 
 ### LOAD DATASET AND TRAIN MODEL ###
+# Parse command line args
+parser = argparse.ArgumentParser(description='Train transformer for authorship attribution.')
+parser.add_argument('--stack-layers', type=int, default=6, help='num encoder layers')
+parser.add_argument('--epochs', type=int, default=10, help='num training epochs')
+args = parser.parse_args()
+
 # Load dataset
 train_file = 'C50-trainData.csv'
 test_file = 'C50-testData.csv'
@@ -525,7 +532,7 @@ print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
 
 devices = [0]
-model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
+model = make_model(len(SRC.vocab), len(TGT.vocab), N=args['stack-layers'])
 model = model.cuda()
 pad_idx = TGT.vocab.stoi["<blank>"]
 criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0.1)
@@ -545,7 +552,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 
 print("Training...")
-for epoch in range(5):
+for epoch in range(args['epochs']):
     print("Epoch " + str(epoch) + ":")
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
