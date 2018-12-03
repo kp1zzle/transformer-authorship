@@ -532,7 +532,7 @@ criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0
 criterion = criterion.cuda()
 
 
-BATCH_SIZE = 1200
+BATCH_SIZE = 3500
 train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
