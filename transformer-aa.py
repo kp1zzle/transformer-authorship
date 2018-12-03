@@ -275,8 +275,8 @@ def run_epoch(data_iter, model, loss_compute):
         tokens += batch.ntokens
         if i % 50 == 1:
             elapsed = time.time() - start
-            print("Epoch Step: %d Loss: %f Tokens per Sec: %f" %
-                    (i, loss / batch.ntokens.float(), tokens / elapsed))
+            if batch.ntokens != 0:
+                print("Epoch Step: %d Loss: %f Tokens per Sec: %f" % (i, loss / batch.ntokens.float(), tokens / elapsed))
             start = time.time()
             tokens = 0
     return total_loss / total_tokens
@@ -542,11 +542,11 @@ model_par = nn.DataParallel(model, device_ids=devices)
 model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
-model.train()
+model_par.train()
 print("Training...")
 for epoch in range(3):
     print("Epoch " + str(epoch) + ":")
-    loss = run_epoch((rebatch(pad_idx, b) for b in train_iter), 
+    run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   #model,
                   #SimpleLossCompute(model.generator, criterion, opt=model_opt))
                   model_par, 
