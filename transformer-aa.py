@@ -270,7 +270,7 @@ def run_epoch(data_iter, model, loss_compute):
                             batch.src_mask, batch.trg_mask)
         loss = loss_compute(out, batch.trg_y, batch.ntokens)
         total_loss += loss
-        total_tokens += batch.ntokens
+        total_tokens += batch.ntokens.float()
         tokens += batch.ntokens
         if i % 50 == 1:
             elapsed = time.time() - start
