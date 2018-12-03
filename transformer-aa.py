@@ -501,6 +501,7 @@ def make_model(src_vocab, tgt_vocab, N=6,
 parser = argparse.ArgumentParser(description='Train transformer for authorship attribution.')
 parser.add_argument('--stack_layers', type=int, default=6, help='num encoder layers')
 parser.add_argument('--epochs', type=int, default=10, help='num training epochs')
+parser.add_argument('--batch_size', type=int, default=3500, help='num training epochs')
 args = parser.parse_args()
 
 # Load dataset
@@ -539,7 +540,7 @@ criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0
 criterion = criterion.cuda()
 
 
-BATCH_SIZE = 3500
+BATCH_SIZE = args.batch_size
 train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
