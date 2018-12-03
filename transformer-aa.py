@@ -508,14 +508,13 @@ BLANK_WORD = "<blank>"
 SRC = data.Field(tokenize=tokenize_en, pad_token=BLANK_WORD)
 TGT = data.Field(init_token = BOS_WORD, eos_token = EOS_WORD, pad_token=BLANK_WORD) 
 
-train, test = data.TabularDataset.splits(
+train = data.TabularDataset.splits(
     path='../data', train=train_file,
-    test=test_file, format='csv',
+     format='csv',
     fields=[('src', SRC), ('trg', TGT)])
 
 print("Dataset loaded")
 print("Train examples: " + str(len(train)))
-print("Test examples: " + str(len(test)))
 
 # Build vocabulary
 SRC.build_vocab(train)
@@ -538,10 +537,6 @@ train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
 
-test_iter = MyIterator(test, batch_size=1, device=torch.device('cuda:0'),
-                        repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
-                        batch_size_fn=batch_size_fn, train=False)
-
 model_par = nn.DataParallel(model, device_ids=devices)
 
 # Train model
@@ -550,7 +545,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 model.train()
 print("Training...")
-for epoch in range(1):
+for epoch in range(3):
     print("Epoch " + str(epoch) + ":")
     loss = run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   #model,
@@ -558,35 +553,38 @@ for epoch in range(1):
                   model_par, 
                   MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
 
+# save trained model
+torch.save(model, 'model.pt')
 
+model.eval()
 # Evaluate model
-for i, batch in enumerate(test_iter):
-    src = batch.src.transpose(0, 1)
-    src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
-    out = greedy_decode(model, src, src_mask, 
-                        max_len=5, start_symbol=TGT.vocab.stoi["<s>"])
-
+# Load train data
+with open('../data/C50-testData', newline='', encoding="utf-8") as csvfile:
+    data = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
     
-    print("Translation:", end="\t")
-    for i in range(1, out.size(1)):
-        sym = TGT.vocab.itos[out[0, i]]
-        if sym == "</s>": break
-        print(sym, end =" ")
-    print()
-    print("Target:", end="\t")
-    for i in range(1, batch.trg.size(0)):
-        sym = TGT.vocab.itos[batch.trg.data[i, 0]]
-        if sym == "</s>": break
-        print(sym, end =" ")
-    print()
-    print(i)
-    
+    texts = dataset['text'].tolist()
+    labels = dataset['author'].tolist()
 
+    correct = 0
 
+    for sentence, label in zip(texts, labels):
+        sent = tokenize_en(sentence)
+        src = torch.LongTensor([[SRC.stoi[w] for w in sent]])
+        src = Variable(src)
+        src_mask = (src != SRC.stoi["<blank>"]).unsqueeze(-2)
+        out = greedy_decode(model, src, src_mask, 
+                            max_len=3, start_symbol=TGT.stoi["<s>"])
+        print("Translation:", end="\t")
+        trans = ""
+        for i in range(1, out.size(1)):
+            sym = TGT.itos[out[0, i]]
+            if sym == "</s>": break
+            trans += sym + " "
+        print(trans)
 
+        if atoi(trans) == label:
+            correct += 1
 
-
-
-
-
+    acc = float(correct)/float(len(labels))
+    print("Test acc: " + acc)
 
