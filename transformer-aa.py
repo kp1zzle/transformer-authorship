@@ -340,7 +340,6 @@ class LabelSmoothing(nn.Module):
         
     def forward(self, x, target):
         assert x.size(1) == self.size
-        pdb.set_trace()
         true_dist = x.data.clone()
         true_dist.fill_(self.smoothing / (self.size - 2))
         true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
@@ -408,7 +407,7 @@ class MultiGPULossCompute:
             # Sum and normalize loss
             l = nn.parallel.gather(loss, 
                                    target_device=self.devices[0])
-            l = l.sum()[0] / normalize
+            l = l.sum()[0] / normalize.float()
             total += l.data[0]
 
             # Backprop loss to output of transformer
@@ -490,7 +489,7 @@ def make_model(src_vocab, tgt_vocab, N=6,
     # Initialize parameters with Glorot / fan_avg.
     for p in model.parameters():
         if p.dim() > 1:
-            nn.init.xavier_uniform(p)
+            nn.init.xavier_uniform_(p)
     return model
 
 ### LOAD DATASET AND TRAIN MODEL ###
@@ -525,7 +524,7 @@ print("Vocabulary built")
 print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
 
-devices = [0]
+devices = [0,1]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
 model = model.cuda()
 pad_idx = TGT.vocab.stoi["<blank>"]
