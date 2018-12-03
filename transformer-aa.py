@@ -557,7 +557,6 @@ for epoch in range(1):
                   #SimpleLossCompute(model.generator, criterion, opt=model_opt))
                   model_par, 
                   MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
-    print(loss)
 
 
 # Evaluate model
@@ -565,7 +564,9 @@ for i, batch in enumerate(test_iter):
     src = batch.src.transpose(0, 1)[:1]
     src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
     out = greedy_decode(model, src, src_mask, 
-                        max_len=1, start_symbol=TGT.vocab.stoi["<s>"])
+                        max_len=5, start_symbol=TGT.vocab.stoi["<s>"])
+
+    
     print("Translation:", end="\t")
     for i in range(1, out.size(1)):
         sym = TGT.vocab.itos[out[0, i]]
@@ -579,6 +580,7 @@ for i, batch in enumerate(test_iter):
         print(sym, end =" ")
     print()
     break
+    
 
 
 
