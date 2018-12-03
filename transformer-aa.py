@@ -525,7 +525,7 @@ print("Vocabulary built")
 print("Source vocab length: " + str(len(SRC.vocab)))
 print("Target vocab length: " + str(len(TGT.vocab)))
 
-devices = [0]
+devices = [0,2]
 model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
 model = model.cuda()
 pad_idx = TGT.vocab.stoi["<blank>"]
@@ -533,7 +533,7 @@ criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0
 criterion = criterion.cuda()
 
 
-BATCH_SIZE = 100
+BATCH_SIZE = 12000
 train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
@@ -550,7 +550,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 model.train()
 print("Training...")
-for epoch in range(10):
+for epoch in range(1):
     print("Epoch " + str(epoch) + ":")
     loss = run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   #model,
