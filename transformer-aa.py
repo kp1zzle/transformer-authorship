@@ -580,7 +580,7 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
         print("Translation:", end="\t")
         trans = ""
         for i in range(1, out.size(1)):
-            sym = TGT.itos[out[0, i]]
+            sym = TGT.vocab.itos[out[0, i]]
             if sym == "</s>": break
             trans += sym + " "
         print(trans)
