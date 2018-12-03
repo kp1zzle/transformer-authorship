@@ -545,7 +545,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 
 print("Training...")
-for epoch in range(10):
+for epoch in range(1):
     print("Epoch " + str(epoch) + ":")
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
@@ -571,11 +571,11 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
 
     for sentence, label in zip(texts, labels):
         sent = tokenize_en(sentence)
-        src = torch.LongTensor([[SRC.stoi[w] for w in sent]])
+        src = torch.LongTensor([[SRC.vocab.stoi[w] for w in sent]])
         src = Variable(src)
-        src_mask = (src != SRC.stoi["<blank>"]).unsqueeze(-2)
+        src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
         out = greedy_decode(model, src, src_mask, 
-                            max_len=3, start_symbol=TGT.stoi["<s>"])
+                            max_len=3, start_symbol=TGT.vocab.stoi["<s>"])
         print("Translation:", end="\t")
         trans = ""
         for i in range(1, out.size(1)):
