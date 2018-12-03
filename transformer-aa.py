@@ -274,12 +274,9 @@ def run_epoch(data_iter, model, loss_compute):
         tokens += batch.ntokens
         if i % 50 == 1:
             elapsed = time.time() - start
-            print(batch.ntokens)
-            print(elapsed)
-            if batch.ntokens.item() != 0:
-                print("Epoch Step: %d Loss: %f" % (i, loss / batch.ntokens.float()))
-
-                #print("Epoch Step: %d Loss: %f Tokens per Sec: %f" % (i, loss / batch.ntokens.float(), tokens / elapsed))
+            if elapsed < 1:
+                elapsed = 1
+            print("Epoch Step: %d Loss: %f Tokens per Sec: %f" % (i, loss / batch.ntokens.float(), tokens / elapsed))
             start = time.time()
             tokens = 0
     return total_loss / total_tokens
@@ -547,7 +544,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 
 print("Training...")
-for epoch in range(3):
+for epoch in range(1):
     print("Epoch " + str(epoch) + ":")
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
@@ -563,7 +560,7 @@ torch.save(model, 'model.pt')
 model.eval()
 # Evaluate model
 # Load train data
-with open('../data/C50-testData', newline='', encoding="utf-8") as csvfile:
+with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
     data = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
     
     texts = dataset['text'].tolist()
