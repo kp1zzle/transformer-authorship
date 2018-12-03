@@ -545,7 +545,7 @@ model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
 
 
 print("Training...")
-for epoch in range(1):
+for epoch in range(5):
     print("Epoch " + str(epoch) + ":")
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
@@ -590,5 +590,5 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
             correct += 1
 
     acc = float(correct)/float(len(labels))
-    print("Test acc: " + acc)
+    print("Test acc: " + str(acc))
 
