@@ -408,8 +408,8 @@ class MultiGPULossCompute:
             # Sum and normalize loss
             l = nn.parallel.gather(loss, 
                                    target_device=self.devices[0])
-            l = l.sum()[0] / normalize.float()
-            total += l.data[0]
+            l = l.sum().item() / normalize.float()
+            total += l.data.item()
 
             # Backprop loss to output of transformer
             if self.opt is not None:
@@ -531,7 +531,7 @@ criterion = LabelSmoothing(size=len(TGT.vocab), padding_idx=pad_idx, smoothing=0
 criterion = criterion.cuda()
 
 
-BATCH_SIZE = 8000
+BATCH_SIZE = 5000
 train_iter = MyIterator(train, batch_size=BATCH_SIZE, device=torch.device('cuda:0'),
                         repeat=False, sort_key=lambda x: (len(x.src), len(x.trg)),
                         batch_size_fn=batch_size_fn, train=True)
