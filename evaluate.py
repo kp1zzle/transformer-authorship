@@ -33,7 +33,7 @@ SRC.build_vocab(train)
 TGT.build_vocab(train)
 print("Built vocabulary")
 
-torch.open('model.pt')
+torch.load('model.pt')
 print("Opened model")
 model.eval()
 # Evaluate model
