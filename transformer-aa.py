@@ -498,15 +498,16 @@ def make_model(src_vocab, tgt_vocab, N=6,
 
 ### LOAD DATASET AND TRAIN MODEL ###
 # Parse command line args
-parser = argparse.ArgumentParser(description='Train transformer for authorship attribution.')
+parser = argparse.ArgumentParser(description='Train transformer for aeuthorship attribution.')
 parser.add_argument('--stack_layers', type=int, default=6, help='num encoder layers')
 parser.add_argument('--epochs', type=int, default=10, help='num training epochs')
 parser.add_argument('--batch_size', type=int, default=3500, help='num training epochs')
+parser.add_argument('--dataset', type=str, default="C50", help='num training epochs')
 args = parser.parse_args()
 
 # Load dataset
-train_file = 'C50-trainData.csv'
-test_file = 'C50-testData.csv'
+train_file = args.dataset+'-trainData.csv'
+test_file = args.dataset+'-testData.csv'
 
 spacy_en = spacy.load('en')
 def tokenize_en(text):
@@ -571,7 +572,7 @@ torch.save(model, 'model.pt')
 model.eval()
 # Evaluate model
 # Load train data
-with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
+with open('../data/'+test_file, newline='', encoding="utf-8") as csvfile:
     dataset = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
     
     texts = dataset['text'].tolist()
@@ -604,4 +605,3 @@ with open('../data/C50-testData.csv', newline='', encoding="utf-8") as csvfile:
 
     acc = float(correct)/float(len(labels))
     print("Test acc: " + str(acc))
-
