@@ -552,10 +552,19 @@ model_par = nn.DataParallel(model, device_ids=devices)
 model_opt = NoamOpt(model.src_embed[0].d_model, 1, 2000,
             torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
+eval_epochs = [0,4,9,14,24,39, 49, 59, 69, 79, 89, 99]
+eval_accs = {}
+
+with open('../data/'+test_file, newline='', encoding="utf-8") as csvfile:
+    dataset = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
+    texts = dataset['text'].tolist()
+    labels = dataset['author'].tolist()
+
 
 print("Training...")
 for epoch in range(args.epochs):
     print("Epoch " + str(epoch) + ":")
+    model.train()
     model_par.train()
     run_epoch((rebatch(pad_idx, b) for b in train_iter), 
                   #model,
@@ -563,45 +572,42 @@ for epoch in range(args.epochs):
                   model_par, 
                   MultiGPULossCompute(model.generator, criterion, devices=devices, opt=model_opt))
     model_par.eval()
+
+    if epoch in eval_epochs:
+        model.eval()
+        correct = 0
+
+        for sentence, label in zip(texts, labels):
+            sent = tokenize_en(sentence)
+            src = torch.LongTensor([[SRC.vocab.stoi[w] for w in sent]])
+            src = Variable(src)
+            src = src.cuda()
+            src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
+            out = greedy_decode(model, src, src_mask.cuda(), 
+                                max_len=3, start_symbol=TGT.vocab.stoi["<s>"])
+            print("Pred:", end="\t")
+            trans = ""
+            for i in range(1, out.size(1)):
+                sym = TGT.vocab.itos[out[0, i]]
+                if sym == "</s>": break
+                trans += sym + " "
+            print(trans)
+            print(label)
+
+            if trans == "":
+                trans = "-1"
+
+            if int(trans) == label:
+                correct += 1
+
+        acc = float(correct)/float(len(labels))
+        eval_accs[str(epoch)] = acc
+
+print(eval_accs)
+
     
 # save trained model
 torch.save(model, 'model.pt')
 
 #model = torch.load('model.pt')
 
-model.eval()
-# Evaluate model
-# Load train data
-with open('../data/'+test_file, newline='', encoding="utf-8") as csvfile:
-    dataset = pd.read_csv(csvfile, delimiter=',', names = ['text', 'author'], encoding='utf-8')
-    
-    texts = dataset['text'].tolist()
-    labels = dataset['author'].tolist()
-
-    correct = 0
-
-    for sentence, label in zip(texts, labels):
-        sent = tokenize_en(sentence)
-        src = torch.LongTensor([[SRC.vocab.stoi[w] for w in sent]])
-        src = Variable(src)
-        src = src.cuda()
-        src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
-        out = greedy_decode(model, src, src_mask.cuda(), 
-                            max_len=3, start_symbol=TGT.vocab.stoi["<s>"])
-        print("Translation:", end="\t")
-        trans = ""
-        for i in range(1, out.size(1)):
-            sym = TGT.vocab.itos[out[0, i]]
-            if sym == "</s>": break
-            trans += sym + " "
-        print(trans)
-        print(label)
-
-        if trans == "":
-            trans = "-1"
-
-        if int(trans) == label:
-            correct += 1
-
-    acc = float(correct)/float(len(labels))
-    print("Test acc: " + str(acc))
