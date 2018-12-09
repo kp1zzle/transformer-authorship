@@ -603,9 +603,10 @@ for epoch in range(args.epochs):
         acc = float(correct)/float(len(labels))
         eval_accs[str(epoch)] = acc
 
-print(eval_accs)
+for epoch in eval_epochs:
+    if str(epoch) in eval_accs:
+        print(" Epoch " + str(epoch) + ": " + str(eval_accs[str(epoch)]))
 
-    
 # save trained model
 torch.save(model, 'model.pt')
 
