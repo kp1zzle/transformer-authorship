@@ -604,6 +604,7 @@ for epoch in range(args.epochs):
 
         acc = float(correct)/float(len(labels))
         eval_accs[str(epoch)] = acc
+        print(acc)
 
 for epoch in eval_epochs:
     if str(epoch) in eval_accs:
