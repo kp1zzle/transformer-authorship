@@ -594,10 +594,12 @@ for epoch in range(args.epochs):
             print(trans)
             print(label)
 
-            if trans == "":
-                trans = "-1"
+            try:
+                pred = int(trans)
+            except ValueError:
+                pred = -1
 
-            if int(trans) == label:
+            if pred == label:
                 correct += 1
 
         acc = float(correct)/float(len(labels))
