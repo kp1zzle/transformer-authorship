@@ -1,4 +1,0 @@
-Transformer for Authorship Attribution
-Kieran Parikh - Fall 2018
-
-transformer-aa.py contains all the underlying machinery of the transformer implementation, as well as the script to train and evaluate the model. Parameters are specified as command line arguments when the program is run. 
